@@ -203,16 +203,19 @@ add_shortcode( 'protected_files', 'protected_files_func' );
 
 
 function auth_btn_func( $atts = array(), $content = '' ) {
+	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	$title = ($mos_pmf_option['mos_btn_title']) ? $mos_pmf_option['mos_btn_title'] : 'Login Area';
+	$url = ( $mos_pmf_option['mos_dashboard_url'] ) ? get_the_permalink( $mos_pmf_option['mos_dashboard_url'] ) : home_url();
 	$html = '';
 	$atts = shortcode_atts( array(
 		'id' => 'value',
 	), $atts, 'auth_btn' );
 	$html .= '<div class="dropdown">';
-	$html .= '<button class="top-btn btn-right dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example';
+	$html .= '<button class="top-btn btn-right dropdown-toggle" type="button" data-toggle="dropdown">' . $title;
 	$html .= '<span class="caret"></span></button>';
 	$html .= '<ul class="dropdown-menu dropdown-menu-right">';
 	if (is_user_logged_in()) {
-		$html .= '<li><a href="'.home_url('/dashboard/').'">Dashboard</a></li>';
+		$html .= '<li><a href="'.$url.'">Dashboard</a></li>';
 		$html .= '<li><a href="'.wp_logout_url(get_permalink(home_url())).'">Logout</a></li>';
 	} else {
 		$html .= '<li><a href="'.wp_login_url().'">Login</a></li>';
@@ -226,9 +229,11 @@ add_shortcode( 'auth_btn', 'auth_btn_func' );
 
 /*Login redirect*/
 function admin_login_redirect( $redirect_to, $request, $user  ) {
+	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	$url = ( $mos_pmf_option['mos_dashboard_url'] ) ? get_the_permalink( $mos_pmf_option['mos_dashboard_url'] ) : home_url();
     if (is_array( $user->roles )) {
         if (in_array( 'subscriber', $user->roles )) {
-            return home_url('/dashboard/');
+            return $url;
         } else {
             return admin_url();
         }
@@ -253,8 +258,10 @@ add_action( 'wp_head', 'single_post_redirect' );
 /*Limit admin access*/
 add_action( 'init', 'blockusers_init' );
 function blockusers_init() {
+	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	$url = ( $mos_pmf_option['mos_dashboard_url'] ) ? get_the_permalink( $mos_pmf_option['mos_dashboard_url'] ) : home_url();
 	if ( is_admin() && !current_user_can( 'administrator' ) && !( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
-		wp_redirect( home_url('/dashboard/') );
+		wp_redirect( home_url($url) );
 		exit;
 	}
 }

@@ -1,0 +1,26 @@
+.mos-pmf-wrapper .nav.nav-tabs {
+    margin-bottom: 0;
+}
+.mos-pmf-wrapper .nav.nav-tabs li {
+    display: inline-block;
+    margin-bottom: 0;
+}
+.mos-pmf-wrapper .nav.nav-tabs li a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    background-color: #eaeaea;
+}
+.mos-pmf-wrapper .nav.nav-tabs li.active a {
+    background-color: #ffffff;
+    box-shadow: none;
+    outline: none;
+}
+.mos-pmf-wrapper .tab-con {
+    display: none;
+    padding: 30px;
+    background-color: #ffffff;
+}
+.mos-pmf-wrapper .tab-con.active {
+    display: block;
+}

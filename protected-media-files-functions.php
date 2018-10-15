@@ -1,8 +1,26 @@
 <?php
+function protected_media_files_admin_enqueue_scripts(){
+	global $pagenow, $typenow;
+	// var_dump($pagenow); //edit.php
+	// var_dump($typenow); //p_file
+	if ($pagenow == 'edit.php' AND $typenow == 'p_file') {
+		wp_enqueue_style( 'protected-media-files-admin', plugins_url( 'css/protected-media-files-admin.css', __FILE__ ) );
+
+		//wp_enqueue_media();
+
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'protected-media-files-admin', plugins_url( 'js/protected-media-files-admin.js', __FILE__ ), array('jquery') );
+	}
+}
+add_action( 'admin_enqueue_scripts', 'protected_media_files_admin_enqueue_scripts' );
 function protected_media_files_enqueue_scripts(){
 	wp_enqueue_style( 'protected-media-files', plugins_url( 'css/protected-media-files.css', __FILE__ ) );
 	wp_enqueue_script( 'protected-media-files', plugins_url( 'js/protected-media-files.js', __FILE__ ), array('jquery') );
-	wp_localize_script( 'protected-media-files', 'ajax_url', admin_url( 'admin-ajax.php' ) );
+	$ajax_params = array(
+		'ajax_url' => admin_url('admin-ajax.php'),
+		'ajax_nonce' => wp_create_nonce('pmf_verify'),
+	);
+	wp_localize_script( 'protected-media-files', 'ajax_obj', $ajax_params );
 }
 add_action( 'wp_enqueue_scripts', 'protected_media_files_enqueue_scripts' );
 
@@ -13,12 +31,15 @@ add_action( 'wp_enqueue_scripts', 'protected_media_files_enqueue_scripts' );
 add_action( 'wp_ajax_pmf', 'my_wp_ajax_noob_pmf_ajax_callback' );
 add_action( 'wp_ajax_nopriv_pmf', 'my_wp_ajax_noob_pmf_ajax_callback' );
 
+add_action( 'wp_ajax_pmf_login', 'my_wp_ajax_noob_pmf_login_ajax_callback' );
+add_action( 'wp_ajax_nopriv_pmf_login', 'my_wp_ajax_noob_pmf_login_ajax_callback' );
+
 
 /**
  * Ajax Callback
  */
 function my_wp_ajax_noob_pmf_ajax_callback(){
-	//echo 1;
+	check_ajax_referer( 'pmf_verify', 'security' );
 	$output = array();
 	$url = $gal = '';
 	$id = isset( $_POST['id'] ) ? $_POST['id'] : 0;
@@ -51,12 +72,32 @@ function my_wp_ajax_noob_pmf_ajax_callback(){
 	//die();	
 	wp_die(); // required. to end AJAX request.
 }
+function my_wp_ajax_noob_pmf_login_ajax_callback(){
+	check_ajax_referer( 'pmf_verify', 'security' );
+	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	$output = array();
+	$output['pmf_access'] = false;
+	$pmf_pcode = isset( $_POST['pmf_pcode'] ) ? $_POST['pmf_pcode'] : 0;
+	if (@$mos_pmf_option['mos_login_type'] == 'pin' AND @$mos_pmf_option['mos_login_pin']) {
+		$mos_login_pin = $mos_pmf_option['mos_login_pin'];
+		if ($pmf_pcode == $mos_login_pin)
+			$output['pmf_access'] = true;
+			$output['redirect'] =  get_the_permalink( $mos_pmf_option['mos_dashboard_url'] );
+	}
+	//$output['pmf_pcode'] = $pmf_pcode;
+	header("Content-type: text/x-json");
+	echo json_encode($output);
+
+	//die();	
+	wp_die(); // required. to end AJAX request.
+}
 
 
 
 
 
 function protected_files_func( $atts = array(), $content = '' ) {
+	$mos_pmf_option = get_option( 'mos_pmf_option' );
 	$html = $container = '';
 
 $html .= '<div id="pmfModal" class="modal fade" role="dialog">
@@ -196,7 +237,7 @@ $html .= '<div id="pmfModal" class="modal fade" role="dialog">
 		endif;
 	endif;
 
-if (is_user_logged_in()) return $html;
+if (isset($_COOKIE['pmf_access'])) return $html;
 else return '<p class="test-center">No content Found</p>';
 }
 add_shortcode( 'protected_files', 'protected_files_func' );
@@ -214,12 +255,20 @@ function auth_btn_func( $atts = array(), $content = '' ) {
 	$html .= '<button class="top-btn btn-right dropdown-toggle" type="button" data-toggle="dropdown">' . $title;
 	$html .= '<span class="caret"></span></button>';
 	$html .= '<ul class="dropdown-menu dropdown-menu-right">';
-	if (is_user_logged_in()) {
-		$html .= '<li><a href="'.$url.'">Dashboard</a></li>';
-		$html .= '<li><a href="'.wp_logout_url(get_permalink(home_url())).'">Logout</a></li>';
+	if ($mos_pmf_option['mos_login_type'] == 'basic') {
+		if (is_user_logged_in()) {
+			$html .= '<li><a href="'.$url.'">Dashboard</a></li>';
+			$html .= '<li><a href="'.wp_logout_url(get_permalink(home_url())).'">Logout</a></li>';
+		} else {
+			$html .= '<li><a href="'.wp_login_url().'">Login</a></li>';
+			$html .= '<li><a href="'.wp_registration_url().'">Register</a></li>';
+		}
 	} else {
-		$html .= '<li><a href="'.wp_login_url().'">Login</a></li>';
-		$html .= '<li><a href="'.wp_registration_url().'">Register</a></li>';
+		if (!isset($_COOKIE['pmf_access'])) $html .= '<li><a id="pmf_poup" href="javascript:void(0)">Login</a></li>';
+		else { 
+			$html .= '<li><a href="'.$url.'">Dashboard</a></li>';
+			$html .= '<li><a id="pmf_logout" href="'.home_url().'">Logout</a></li>';
+		}
 	}
 	$html .= '</ul>';
 	$html .= '</div>';
@@ -265,3 +314,29 @@ function blockusers_init() {
 		exit;
 	}
 }
+
+
+
+
+add_action('wp_login', 'add_custom_cookie_admin');
+function add_custom_cookie_admin() {
+  //if(is_admin()) {
+    setcookie('pmf_access', 1, time() + 86400, '/'); // expire in a day
+  //}
+}
+add_action('wp_logout', 'remove_custom_cookie_admin');
+function remove_custom_cookie_admin() {
+  setcookie('pmf_access', '', time() - 3600);
+}
+
+/*function myplugin_activate() {
+	?>
+	<script>
+		alert(0);
+		//window.location.href = <?php echo admin_url('/edit.php?post_type=p_file&page=pmf_settings')?>;
+	</script>
+	<?php
+}
+register_activation_hook( __FILE__, 'myplugin_activate' );*/
+
+

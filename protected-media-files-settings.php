@@ -10,19 +10,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" ) {
 }
 
 function mos_pmf_admin_menu () {
-    add_submenu_page( 'edit.php?post_type=p_file', 'Settings', 'Settings', 'manage_options', 'settings', 'mos_pmf_admin_page' );
+    add_submenu_page( 'edit.php?post_type=p_file', 'Settings', 'Settings', 'manage_options', 'pmf_settings', 'mos_pmf_admin_page' );
 }
 add_action("admin_menu", "mos_pmf_admin_menu");
 function mos_pmf_admin_page () {
 	$mos_pmf_option = get_option( 'mos_pmf_option' );
 	?>
-	<div class="wrap mos-faq-wrapper">
+	<div class="wrap mos-pmf-wrapper">
         <h1><?php _e("Settings") ?></h1>
         <ul class="nav nav-tabs">
-            <li class="tab-nav <?php if(!@$active_tab OR $active_tab == 'dashboard') echo 'active';?>"><a data-id="dashboard" href="?post_type=qa&page=settings&tab=dashboard">Dashboard</a></li>
+            <li class="tab-nav <?php if(!@$active_tab OR $active_tab == 'dashboard') echo 'active';?>"><a data-id="dashboard" href="?post_type=p_file&page=pmf_settings&tab=dashboard">Dashboard</a></li>
+            <li class="tab-nav <?php if($active_tab == 'login') echo 'active';?>"><a data-id="login" href="?post_type=p_file&page=pmf_settings&tab=login">Login</a></li>
         </ul>
         <form method="post">
-        	<div id="mos-faq-dashboard" class="tab-con <?php if(!@$active_tab OR $active_tab == 'dashboard') echo 'active' ?>">
+        	<div id="mos-pmf-dashboard" class="tab-con <?php if(!@$active_tab OR $active_tab == 'dashboard') echo 'active' ?>">
         		<!-- <h3>Body Styling</h3> -->
 		        <table class="form-table">
 		            <tbody>
@@ -99,6 +100,28 @@ function mos_pmf_admin_page () {
 		                </tr>
 		            </tbody>
 		        </table>
+          </div>
+          <div id="mos-pmf-login" class="tab-con <?php if($active_tab == 'login') echo 'active' ?>">
+            <table class="form-table">
+              <tbody>
+                  <tr>
+                    <th scope="row"><label for="mos_login_type">Login Type</label></th>
+                    <td>
+                      <?php $pages = get_pages();?>
+                      <select name="mos_login_type" id="mos_login_type">
+                        <option value="">Select One</option>
+                        <option value="basic" <?php selected( $mos_pmf_option['mos_login_type'], 'basic' ) ?>>Basic Login</option>
+                        <option value="pin" <?php selected( $mos_pmf_option['mos_login_type'], 'pin' ) ?>>Pin Login</option>
+                      </select>
+                    </td> 
+                  </tr>
+                  <tr>
+                    <th scope="row"><label for="mos_login_pin">Login Pin</label></th>
+                    <td><input type="text" name="mos_login_pin" id="mos_login_pin" class="regular-text" value="<?php echo @$mos_pmf_option['mos_login_pin']; ?>"></td>
+                  </tr>
+                </tbody> 
+              </table>          
+          </div>
 	    	<p class="submit"><input type="submit" name="mos_pmf_submit" id="submit" class="button button-primary" value="Save Changes"></p>
         </form>
     </div>

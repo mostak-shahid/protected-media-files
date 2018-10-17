@@ -9,12 +9,15 @@ function protected_media_files_admin_enqueue_scripts(){
 		//wp_enqueue_media();
 
 		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'protected-media-files-functions', plugins_url( 'js/protected-media-files-functions.js', __FILE__ ), array('jquery') );
 		wp_enqueue_script( 'protected-media-files-admin', plugins_url( 'js/protected-media-files-admin.js', __FILE__ ), array('jquery') );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'protected_media_files_admin_enqueue_scripts' );
 function protected_media_files_enqueue_scripts(){
+	wp_enqueue_script( 'jquery' );
 	wp_enqueue_style( 'protected-media-files', plugins_url( 'css/protected-media-files.css', __FILE__ ) );
+	wp_enqueue_script( 'protected-media-files-functions', plugins_url( 'js/protected-media-files-functions.js', __FILE__ ), array('jquery') );
 	wp_enqueue_script( 'protected-media-files', plugins_url( 'js/protected-media-files.js', __FILE__ ), array('jquery') );
 	$ajax_params = array(
 		'ajax_url' => admin_url('admin-ajax.php'),

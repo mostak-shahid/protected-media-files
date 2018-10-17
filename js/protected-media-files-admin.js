@@ -3,6 +3,7 @@ jQuery(document).ready(function($) {
       event.preventDefault();
       var id = $(this).data('id');
       //alert('#mos-pmf-' + id);
+      setPmfCookie('pmf_active_tab',id,1);
       $('#mos-pmf-'+id).addClass('active');
       $('#mos-pmf-'+id).siblings().removeClass('active');
       $(this).closest('.tab-nav').addClass('active');

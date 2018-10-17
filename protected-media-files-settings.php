@@ -19,11 +19,11 @@ function mos_pmf_admin_page () {
 	<div class="wrap mos-pmf-wrapper">
         <h1><?php _e("Settings") ?></h1>
         <ul class="nav nav-tabs">
-            <li class="tab-nav <?php if(!@$active_tab OR $active_tab == 'dashboard') echo 'active';?>"><a data-id="dashboard" href="?post_type=p_file&page=pmf_settings&tab=dashboard">Dashboard</a></li>
-            <li class="tab-nav <?php if($active_tab == 'login') echo 'active';?>"><a data-id="login" href="?post_type=p_file&page=pmf_settings&tab=login">Login</a></li>
+            <li class="tab-nav <?php if((!@$active_tab AND !@isset($_COOKIE['pmf_access'])) OR $active_tab == 'dashboard' OR $_COOKIE['pmf_active_tab'] == 'dashboard') echo 'active';?>"><a data-id="dashboard" href="?post_type=p_file&page=pmf_settings&tab=dashboard">Dashboard</a></li>
+            <li class="tab-nav <?php if($active_tab == 'login' OR $_COOKIE['pmf_active_tab'] == 'login') echo 'active';?>"><a data-id="login" href="?post_type=p_file&page=pmf_settings&tab=login">Login</a></li>
         </ul>
         <form method="post">
-        	<div id="mos-pmf-dashboard" class="tab-con <?php if(!@$active_tab OR $active_tab == 'dashboard') echo 'active' ?>">
+        	<div id="mos-pmf-dashboard" class="tab-con <?php if((!@$active_tab AND !@isset($_COOKIE['pmf_access'])) OR $active_tab == 'dashboard' OR $_COOKIE['pmf_active_tab'] == 'dashboard') echo 'active';?>">
         		<!-- <h3>Body Styling</h3> -->
 		        <table class="form-table">
 		            <tbody>
@@ -101,7 +101,7 @@ function mos_pmf_admin_page () {
 		            </tbody>
 		        </table>
           </div>
-          <div id="mos-pmf-login" class="tab-con <?php if($active_tab == 'login') echo 'active' ?>">
+          <div id="mos-pmf-login" class="tab-con <?php if($active_tab == 'login' OR $_COOKIE['pmf_active_tab'] == 'login') echo 'active';?>">
             <table class="form-table">
               <tbody>
                   <tr>

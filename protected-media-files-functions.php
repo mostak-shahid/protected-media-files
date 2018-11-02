@@ -9,13 +9,38 @@ function protected_media_files_admin_enqueue_scripts(){
 		//wp_enqueue_media();
 
 		wp_enqueue_script( 'jquery' );
+		
+		/*Editor*/
+		//wp_enqueue_style( 'docs', plugins_url( 'plugins/CodeMirror/doc/docs.css', __FILE__ ) );
+		wp_enqueue_style( 'codemirror', plugins_url( 'plugins/CodeMirror/lib/codemirror.css', __FILE__ ) );
+		wp_enqueue_style( 'show-hint', plugins_url( 'plugins/CodeMirror/addon/hint/show-hint.css', __FILE__ ) );
+
+		wp_enqueue_script( 'codemirror', plugins_url( 'plugins/CodeMirror/lib/codemirror.js', __FILE__ ), array('jquery') );
+		wp_enqueue_script( 'css', plugins_url( 'plugins/CodeMirror/mode/css/css.js', __FILE__ ), array('jquery') );
+		wp_enqueue_script( 'javascript', plugins_url( 'plugins/CodeMirror/mode/javascript/javascript.js', __FILE__ ), array('jquery') );
+		wp_enqueue_script( 'show-hint', plugins_url( 'plugins/CodeMirror/addon/hint/show-hint.js', __FILE__ ), array('jquery') );
+		wp_enqueue_script( 'css-hint', plugins_url( 'plugins/CodeMirror/addon/hint/css-hint.js', __FILE__ ), array('jquery') );
+		wp_enqueue_script( 'javascript-hint', plugins_url( 'plugins/CodeMirror/addon/hint/javascript-hint.js', __FILE__ ), array('jquery') );
+		/*Editor*/
+
 		wp_enqueue_script( 'protected-media-files-functions', plugins_url( 'js/protected-media-files-functions.js', __FILE__ ), array('jquery') );
 		wp_enqueue_script( 'protected-media-files-admin', plugins_url( 'js/protected-media-files-admin.js', __FILE__ ), array('jquery') );
 	}
+
 }
 add_action( 'admin_enqueue_scripts', 'protected_media_files_admin_enqueue_scripts' );
 function protected_media_files_enqueue_scripts(){
-	wp_enqueue_script( 'jquery' );
+	global $mos_pmf_option;
+	if ($mos_pmf_option['mos_scripts_jquery']) {
+		wp_enqueue_script( 'jquery' );
+	}
+	if ($mos_pmf_option['mos_scripts_bootstrap']) {
+		wp_enqueue_style( 'bootstrap.min', plugins_url( 'css/bootstrap.min.css', __FILE__ ) );
+		wp_enqueue_script( 'bootstrap.min', plugins_url( 'js/bootstrap.min.js', __FILE__ ), array('jquery') );
+	}
+	if ($mos_pmf_option['mos_scripts_awesome']) {
+		wp_enqueue_style( 'font-awesome.min', plugins_url( 'fonts/font-awesome-4.7.0/css/font-awesome.min.css', __FILE__ ) );
+	}
 	wp_enqueue_style( 'protected-media-files', plugins_url( 'css/protected-media-files.css', __FILE__ ) );
 	wp_enqueue_script( 'protected-media-files-functions', plugins_url( 'js/protected-media-files-functions.js', __FILE__ ), array('jquery') );
 	wp_enqueue_script( 'protected-media-files', plugins_url( 'js/protected-media-files.js', __FILE__ ), array('jquery') );
@@ -54,19 +79,28 @@ function my_wp_ajax_noob_pmf_ajax_callback(){
 	$content = str_replace(']]>', ']]&gt;', $content);
 	$output['content'] = $content;
 	$files = get_post_meta( $id, '_pmf_gallery_images', true );
-	$vf = array("video/mp4", "video/mpg", "video/mpeg", "video/mov", "video/avi", "video/flv", "video/wmv");
-	$vf = array("mp4", "MP4");
+	//$vf = array("video/mp4", "video/mpg", "video/mpeg", "video/mov", "video/avi", "video/flv", "video/wmv");
 	$if = array("gif", "png", "jpeg", "jpg", "JPG", "JPEG", "PNG", "GIF");
+	$vf = array("mp4");
+	$wf = array("doc", "docx");
+	$ppf = array("ppt", "pptx");
+	$pf = array("pdf");
+	$af = array("zip", "rar", "tar");
+	$gal .= '<div class="grid four">';
 	foreach ($files as $key => $value) {
 		$url = wp_get_attachment_url( $key );
 		$slices = explode('.', $url);
-		if (in_array(end($slices), $if)){
-		    $gal .= '<img src="'.$url.'" />';
-		}
-		elseif (in_array(end($slices), $vf)){
-			$gal .= '<video controls style="width: 100%"><source src="'.$url.'" type="video/mp4">Your browser does not support the video tag.</video>';
-		}
+		$ext = strtolower(end($slices));
+		if (in_array($ext, $if)) $faclass = '-photo-o';
+		elseif (in_array($ext, $vf)) $faclass = '-video-o';
+		elseif (in_array($ext, $wf)) $faclass = '-word-o';
+		elseif (in_array($ext, $ppf)) $faclass = '-powerpoint-o';
+		elseif (in_array($ext, $pf)) $faclass = '-pdf-o';
+		elseif (in_array($ext, $af)) $faclass = '-archive-o';
+		else $faclass = '';
+		$gal .= '<div class="grid-item"><div class="view-unit"><i class="fa fa-file'.$faclass.'"></i><span>'.get_the_title( $key ).'</span><a class="h-link" href="'.$url.'" target="_blank">View</a></div></div>';
 	}
+	$gal .= '</div>';
 	$output['media'] = $gal;
 	
 	header("Content-type: text/x-json");
@@ -77,7 +111,7 @@ function my_wp_ajax_noob_pmf_ajax_callback(){
 }
 function my_wp_ajax_noob_pmf_login_ajax_callback(){
 	check_ajax_referer( 'pmf_verify', 'security' );
-	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	global $mos_pmf_option;
 	$output = array();
 	$output['pmf_access'] = false;
 	$pmf_pcode = isset( $_POST['pmf_pcode'] ) ? $_POST['pmf_pcode'] : 0;
@@ -100,7 +134,7 @@ function my_wp_ajax_noob_pmf_login_ajax_callback(){
 
 
 function protected_files_func( $atts = array(), $content = '' ) {
-	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	global $mos_pmf_option;
 	$html = $container = '';
 
 $html .= '<div id="pmfModal" class="modal fade" role="dialog">
@@ -247,7 +281,7 @@ add_shortcode( 'protected_files', 'protected_files_func' );
 
 
 function auth_btn_func( $atts = array(), $content = '' ) {
-	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	global $mos_pmf_option;
 	$title = ($mos_pmf_option['mos_btn_title']) ? $mos_pmf_option['mos_btn_title'] : 'Login Area';
 	$url = ( $mos_pmf_option['mos_dashboard_url'] ) ? get_the_permalink( $mos_pmf_option['mos_dashboard_url'] ) : home_url();
 	$html = '';
@@ -281,7 +315,7 @@ add_shortcode( 'auth_btn', 'auth_btn_func' );
 
 /*Login redirect*/
 function admin_login_redirect( $redirect_to, $request, $user  ) {
-	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	global $mos_pmf_option;
 	$url = ( $mos_pmf_option['mos_dashboard_url'] ) ? get_the_permalink( $mos_pmf_option['mos_dashboard_url'] ) : home_url();
     if (is_array( $user->roles )) {
         if (in_array( 'subscriber', $user->roles )) {
@@ -310,7 +344,7 @@ add_action( 'wp_head', 'single_post_redirect' );
 /*Limit admin access*/
 add_action( 'init', 'blockusers_init' );
 function blockusers_init() {
-	$mos_pmf_option = get_option( 'mos_pmf_option' );
+	global $mos_pmf_option;
 	$url = ( $mos_pmf_option['mos_dashboard_url'] ) ? get_the_permalink( $mos_pmf_option['mos_dashboard_url'] ) : home_url();
 	if ( is_admin() && !current_user_can( 'administrator' ) && !( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 		wp_redirect( home_url($url) );
@@ -331,6 +365,24 @@ add_action('wp_logout', 'remove_custom_cookie_admin');
 function remove_custom_cookie_admin() {
   setcookie('pmf_access', '', time() - 3600);
 }
+function protected_files_scripts() {
+	global $mos_pmf_option;
+	if ($mos_pmf_option['mos_add_css']) {
+		?>
+		<style>
+			<?php echo $mos_pmf_option['mos_add_css'] ?>
+		</style>
+		<?php
+	}
+	if ($mos_pmf_option['mos_add_js']) {
+		?>
+		<style>
+			<?php echo $mos_pmf_option['mos_add_js'] ?>
+		</style>
+		<?php
+	}
+}
+add_action( 'wp_footer', 'protected_files_scripts', 100 );
 
 /*function myplugin_activate() {
 	?>

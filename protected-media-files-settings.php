@@ -25,6 +25,7 @@ function mos_pmf_admin_page () {
         <ul class="nav nav-tabs">
             <li class="tab-nav <?php if($active_tab == 'dashboard') echo 'active';?>"><a data-id="dashboard" href="?post_type=p_file&page=pmf_settings&tab=dashboard">Dashboard</a></li>
             <li class="tab-nav <?php if($active_tab == 'login') echo 'active';?>"><a data-id="login" href="?post_type=p_file&page=pmf_settings&tab=login">Login</a></li>
+            <li class="tab-nav <?php if($active_tab == 'scripts') echo 'active';?>"><a data-id="scripts" href="?post_type=p_file&page=pmf_settings&tab=scripts">Scripts</a></li>
         </ul>
         <form method="post">
         	<div id="mos-pmf-dashboard" class="tab-con <?php if($active_tab == 'dashboard') echo 'active';?>">
@@ -122,6 +123,66 @@ function mos_pmf_admin_page () {
                   <tr>
                     <th scope="row"><label for="mos_login_pin">Login Pin</label></th>
                     <td><input type="text" name="mos_login_pin" id="mos_login_pin" class="regular-text" value="<?php echo @$mos_pmf_option['mos_login_pin']; ?>"></td>
+                  </tr>
+                </tbody> 
+              </table>          
+          </div>
+          <div id="mos-pmf-scripts" class="tab-con <?php if($active_tab == 'scripts') echo 'active';?>">
+            <table class="form-table">
+              <tbody>
+                  <tr>
+                    <th scope="row">JQuery</th>
+                    <td>
+                      <fieldset>
+                        <legend class="screen-reader-text"><span>JQuery</span></legend>
+                        <label for="mos_scripts_jquery"><input name="mos_scripts_jquery" type="checkbox" id="mos_scripts_jquery" value="1" <?php checked( $mos_pmf_option['mos_scripts_jquery'], 1 ) ?>>Yes I like to add JQuery from Plugin.</label>
+                    </fieldset>
+                    </td> 
+                  </tr>
+                  <tr>
+                    <th scope="row">Bootstrap</th>
+                    <td>
+                      <fieldset>
+                        <legend class="screen-reader-text"><span>Bootstrap</span></legend>
+                        <label for="mos_scripts_bootstrap"><input name="mos_scripts_bootstrap" type="checkbox" id="mos_scripts_bootstrap" value="1" <?php checked( $mos_pmf_option['mos_scripts_bootstrap'], 1 ) ?>>Yes I like to add Bootstrap from Plugin.</label>
+                    </fieldset>
+                    </td> 
+                  </tr>
+                  <tr>
+                    <th scope="row">Font Awesome</th>
+                    <td>
+                      <fieldset>
+                        <legend class="screen-reader-text"><span>Font Awesome</span></legend>
+                        <label for="mos_scripts_awesome"><input name="mos_scripts_awesome" type="checkbox" id="mos_scripts_awesome" value="1" <?php checked( $mos_pmf_option['mos_scripts_awesome'], 1 ) ?>>Yes I like to add Font Awesome from Plugin.</label>
+                    </fieldset>
+                    </td> 
+                  </tr>
+                  <tr>
+                    <th scope="row"><label for="mos_add_css">Css</label></th>
+                    <td>
+                      <textarea name="mos_add_css" id="mos_add_css"><?php echo @$mos_pmf_option['mos_add_css']; ?></textarea>
+                      <script>
+                        var editor = CodeMirror.fromTextArea(document.getElementById("mos_add_css"), {
+                          lineNumbers: true,
+                          mode: "text/css",
+                          extraKeys: {"Ctrl-Space": "autocomplete"}
+                        });
+                      </script>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><label for="mos_add_js">Js</label></th>
+                    <td>
+                      <textarea name="mos_add_js" id="mos_add_js"><?php echo @$mos_pmf_option['mos_add_js']; ?></textarea>
+
+                      <script>
+                        var editor = CodeMirror.fromTextArea(document.getElementById("mos_add_js"), {
+                          lineNumbers: true,
+                          mode: "text/javascript",
+                          extraKeys: {"Ctrl-Space": "autocomplete"}
+                        });
+                      </script>
+                    </td>
                   </tr>
                 </tbody> 
               </table>          

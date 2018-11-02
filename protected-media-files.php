@@ -2,7 +2,7 @@
 /*
 Plugin Name: Protected Media Posts
 Description: This is a Plugin for Naturopathic Services. How to use it, very simple just active this plugin, It will create a admin menu tab named "Protected Posts". Post your media files under "Protected Posts" tab
-Version: 0.0.15
+Version: 0.0.16
 Author: Md. Mostak Shahid
 */
 
@@ -19,7 +19,7 @@ if ( ! defined( 'PMF_PLUGIN_FILE' ) ) {
 if ( ! defined( 'PMF_SETTINGS' ) ) {
 	define( 'PMF_SETTINGS', admin_url('/edit.php?post_type=p_file&page=pmf_settings') );
 }
-
+$mos_pmf_option = get_option( 'mos_pmf_option' );
 $plugin = plugin_basename(PMF_PLUGIN_FILE); 
 require_once ( plugin_dir_path( PMF_PLUGIN_FILE ) . 'protected-media-files-functions.php' );
 require_once ( plugin_dir_path( PMF_PLUGIN_FILE ) . 'protected-media-files-settings.php' );

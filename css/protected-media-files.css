@@ -37,6 +37,38 @@
 	opacity: 0;
 	filter: alpha(opacity=0);
 }
+.p-file-image img {width: 100%;height: auto;}
+.p-file-title:before {
+	font-family: 'FontAwesome';
+    content: '\f07b';
+    display: inline-block;
+    margin-right: 10px;
+}
+.view-unit {
+	position: relative;
+	border-radius: 5px;
+	border: 1px solid #eaeaea;
+	text-align: center;
+	padding: 10px;
+}
+.view-unit i {
+	font-size: 30px;
+	margin-bottom: 10px;
+}
+.view-unit span {
+	display: block;
+	font-size: 20px;
+	font-weight: 500;
+}
+.view-unit .h-link {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
 .modal-dialog.modal-xl {
 	width: 80%;
 }

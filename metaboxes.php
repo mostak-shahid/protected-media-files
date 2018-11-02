@@ -17,30 +17,30 @@ function pmf_metaboxes() {
     //     'id'   => $prefix . 'image_height',
     //     'type' => 'text_number',
     // ));
-    $pmf_details->add_field( array(
-        'name'             => 'Large Image Size',
-        'desc'             => 'Select an option',
-        'id'               => $prefix . 'large_image_size',
-        'type'             => 'select',
-        'default'          => 'container',
-        'options'          => array(
-            'actual' => __( 'Actual Size', 'cmb2' ),
-            'max'   => __( 'Max Size (Width 1920px)', 'cmb2' ),
-            'container'     => __( 'Container Size (Width 1140px)', 'cmb2' ),
-        ),
-    ) );
-    $pmf_details->add_field( array( 
-        'name' => __('Gallery Layout', 'cmb2'), 
-        'id' => $prefix . 'gallery_layout', 
-        'type' => 'select', 
-        'default'          => '6',
-        'options'          => array(
-            '6' => __( 'Two Column', 'cmb2' ),
-            '4'   => __( 'Three Column', 'cmb2' ),
-            '3'     => __( 'Four Column', 'cmb2' ),
-        ),
-        'default' => '6',
-    ));      
+    // $pmf_details->add_field( array(
+    //     'name'             => 'Large Image Size',
+    //     'desc'             => 'Select an option',
+    //     'id'               => $prefix . 'large_image_size',
+    //     'type'             => 'select',
+    //     'default'          => 'container',
+    //     'options'          => array(
+    //         'actual' => __( 'Actual Size', 'cmb2' ),
+    //         'max'   => __( 'Max Size (Width 1920px)', 'cmb2' ),
+    //         'container'     => __( 'Container Size (Width 1140px)', 'cmb2' ),
+    //     ),
+    // ) );
+    // $pmf_details->add_field( array( 
+    //     'name' => __('Gallery Layout', 'cmb2'), 
+    //     'id' => $prefix . 'gallery_layout', 
+    //     'type' => 'select', 
+    //     'default'          => '6',
+    //     'options'          => array(
+    //         '6' => __( 'Two Column', 'cmb2' ),
+    //         '4'   => __( 'Three Column', 'cmb2' ),
+    //         '3'     => __( 'Four Column', 'cmb2' ),
+    //     ),
+    //     'default' => '6',
+    // ));      
     // $pmf_details->add_field(array(
     //     'name' => 'Grid Spacing',
     //     'desc' => 'Yes I like to use gap between grids.',

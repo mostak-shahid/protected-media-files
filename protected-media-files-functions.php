@@ -346,9 +346,11 @@ add_action( 'init', 'blockusers_init' );
 function blockusers_init() {
 	global $mos_pmf_option;
 	$url = ( $mos_pmf_option['mos_dashboard_url'] ) ? get_the_permalink( $mos_pmf_option['mos_dashboard_url'] ) : home_url();
-	if ( is_admin() && !current_user_can( 'administrator' ) && !( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
-		wp_redirect( home_url($url) );
-		exit;
+	if (is_user_logged_in()) {
+		if ( is_admin() && !current_user_can( 'administrator' ) && !( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+			wp_redirect( $url );
+			exit;
+		}
 	}
 }
 
